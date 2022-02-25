@@ -5,6 +5,10 @@ import pandas as pd
 
 from redditAPI import redditTimeFilter
 from redditAPI import redditAPI
+from stockExtractor import stockExtractor
+from stockAnalysis import getTopStocks
+
+
 
 
 def main():
@@ -12,7 +16,7 @@ def main():
     print("Starting Stock Analyser")
     os.makedirs('dataset', exist_ok = True)
     
-    
+    #get Reddit Titles
     if not exists("dataset/redditTitles.csv"):
         redditApi = redditAPI()
         dfTitles = redditApi.getTopSubredditTitles("stocks", redditTimeFilter.WEEK.value)
@@ -20,7 +24,7 @@ def main():
     else:
         print("Reddit Titles dataset already exists")
         
-        
+    #get Comments    
     if not exists("dataset/redditComments.csv"):
         redditApi = redditAPI()
         dfTitles = pd.read_csv("dataset/redditTitles.csv")
@@ -33,8 +37,15 @@ def main():
     else:
         print("Reddit Comments dataset already exists")
     
+    #extract stocks from Title
+    dfAllComments = pd.read_csv("dataset/redditComments.csv")
+    stockExtract = stockExtractor()
+    stocks, stockTexts = stockExtract.getStockCountFromDF(dfAllComments['commentText'])
     
-
+    #get Top Stocks
+    symbols, topStocks = getTopStocks(stocks)
+    
+   
     
     
 if __name__ == '__main__':

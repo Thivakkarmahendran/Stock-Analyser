@@ -18,6 +18,9 @@ class redditTimeFilter(enum.Enum):
     WEEK = "week"
     YEAR = "year"
 
+########### CONFIG ##########
+MIN_COMMENT_SCORE = 25
+
 """
 EXAMPLE:
 api = redditAPI()
@@ -109,11 +112,14 @@ class redditAPI:
         try:
             for comment in post.comments:
                 
+                if(comment.score < MIN_COMMENT_SCORE): #discard comments with low score
+                    continue
+                
                 df = df.append({
                 'subredditName' : subredditName,  
                 'postTitle' : post.title, 
                 'postId' : post.id, 
-                'commentTitle' : comment.body, 
+                'commentText' : comment.body, 
                 'commentScore' : comment.score, 
                 'commentCreated' : pd.to_datetime(comment.created, unit="s") 
             }, ignore_index = True)
