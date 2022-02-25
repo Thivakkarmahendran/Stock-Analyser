@@ -38,14 +38,15 @@ class redditAPI:
             user_agent="USERAGENT"  
         )
     
-    #Subreddit Titles
+    #Extract Subreddit Titles - Top
     def getTopSubredditTitles(self, subredditName, timeFilter):
 
-        df = pd.DataFrame()
+        dfPosts = pd.DataFrame()
 
         subreddit = self.redditApi.subreddit(subredditName)
         for post in subreddit.top(timeFilter):
-            df = df.append({
+            
+            dfPosts = dfPosts.append({
                 'subredditName' : subreddit.display_name, 
                 'subredditId' : subreddit.id , 
                 'subredditType' : "Top", 
@@ -56,9 +57,10 @@ class redditAPI:
                 'postNumOfComments' : post.num_comments, 
                 'postCreated' : pd.to_datetime(post.created, unit="s") 
             }, ignore_index = True)
+            
+        return dfPosts
 
-        return df
-
+    #Extract Subreddit Titles - Hot
     def getHotSubredditTitles(self, subredditName, timeFilter):
 
         df = pd.DataFrame()
@@ -78,6 +80,7 @@ class redditAPI:
 
         return df
 
+    #Extract Subreddit Titles - New
     def getNewSubredditTitles(self, subredditName, timeFilter):
 
         df = pd.DataFrame()
@@ -96,10 +99,28 @@ class redditAPI:
             }, ignore_index = True)
 
         return df
-
-
-
-
-
-
-
+    
+    #Extract comments from post
+    def getPostComments(self, postId, subredditName):
+        
+        df = pd.DataFrame()
+        post =  self.redditApi.submission(id = postId)
+        
+        try:
+            for comment in post.comments:
+                
+                df = df.append({
+                'subredditName' : subredditName,  
+                'postTitle' : post.title, 
+                'postId' : post.id, 
+                'commentTitle' : comment.body, 
+                'commentScore' : comment.score, 
+                'commentCreated' : pd.to_datetime(comment.created, unit="s") 
+            }, ignore_index = True)
+                
+        except Exception as e: print(e)
+        
+        return df
+    
+    
+    
