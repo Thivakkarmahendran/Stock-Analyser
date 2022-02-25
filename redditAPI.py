@@ -18,6 +18,12 @@ class redditTimeFilter(enum.Enum):
     WEEK = "week"
     YEAR = "year"
 
+"""
+EXAMPLE:
+api = redditAPI()
+df = api.getTopSubredditTitles("stocks", redditTimeFilter.WEEK.value)
+"""
+
 class redditAPI:
   
     redditApi = None
@@ -93,8 +99,7 @@ class redditAPI:
 
 
 
-p1 = redditAPI()
-df = p1.getTopSubredditTitles("stocks", redditTimeFilter.WEEK.value)
-df.to_csv("stocks.csv")
+
+
 
 
