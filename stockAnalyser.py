@@ -1,4 +1,5 @@
 #imports
+import imp
 from os.path import exists
 import os
 import pandas as pd
@@ -7,6 +8,7 @@ from redditAPI import redditTimeFilter
 from redditAPI import redditAPI
 from stockExtractor import stockExtractor
 from stockAnalysis import getTopStocks
+from sentimalAnalysis import stockTextSentimentAnalysis
 
 
 
@@ -43,7 +45,12 @@ def main():
     stocks, stockTexts = stockExtract.getStockCountFromDF(dfAllComments['commentText'])
     
     #get Top Stocks
-    symbols, topStocks = getTopStocks(stocks)
+    topStocks, topStocksAndCount = getTopStocks(stocks)
+    
+    scores = stockTextSentimentAnalysis(topStocks, stockTexts)
+    
+    print(scores)
+
     
    
     
