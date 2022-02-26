@@ -1,3 +1,5 @@
+import pandas as pd
+
 ########### CONFIG ##########
 TOP_NUMBER_OF_STOCKS = 10
 
@@ -22,3 +24,10 @@ def getTopStocks(stocks, printOutput: bool = False):
         top.append(f"{stockName}: {symbols[stockName]}")
         
     return topStocks, top
+
+
+def printSentimalAnalysis(topStocks, scores):
+    print(f"\nSentiment analysis of top {topStocks} picks:")
+    scores = scores.T
+    scores.index = ['Bearish', 'Neutral', 'Bullish', 'Total', 'Sentiment']
+    print(scores)

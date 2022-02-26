@@ -8,6 +8,8 @@ import emoji
 import re
 import string
 import en_core_web_sm
+import pandas as pd
+import numpy as np
 
 
 # adding wsb/reddit flavour to vader to improve sentiment analysis, score: 4.0 to -4.0
@@ -110,32 +112,33 @@ def stockTextSentimentAnalysis(topStocks, stockTexts):
             
             comment = removeEmoji(comment)
             comment = removePunctuation(comment)
-            tokenizedComment = tokenizeText(comment)
-            commentList = removeStopWord(tokenizedComment)
-            lemmatizedComment = lematization(commentList)
+            
+            #tokenizedComment = tokenizeText(comment)
+            #commentList = removeStopWord(tokenizedComment)
+            #lemmatizedComment = lematization(commentList)
 
-            commentScore = {'neg': 0.0, 'neu': 0.0, 'pos': 0.0, 'compound': 0.0}
-            
-            word_count = 0
-            for word in lemmatizedComment:
-                score = vader.polarity_scores(word)
-                word_count += 1
-                for key, _ in score.items():
-                    commentScore[key] += score[key] 
-            
-            try: 
-                for key in commentScore:
-                    commentScore[key] = commentScore[key] / word_count
-            except: pass
+            sentimentComment = vader.polarity_scores(comment)
             
             if stock in scores:
-                for key, _ in commentScore.items():
-                    scores[stock][key] += commentScore[key]
+                for key, _ in sentimentComment.items():
+                    scores[stock][key] += sentimentComment[key]
             else:
-                scores[stock] = commentScore
+                scores[stock] = sentimentComment
         
-        for key in commentScore:
-            #scores[stock][key] = scores[stock][key] / symbols[symbol]
-            scores[stock][key]  = "{pol:.3f}".format(pol=scores[stock][key])
+        for key in ['neg', 'neu', 'pos', 'compound']:
+            scores[stock][key] = scores[stock][key] / len(stockComments)
     
-    return scores
+    
+    df = pd.DataFrame.from_dict(scores)
+    df = df.T
+            
+    def conditions(s):
+        if (s['compound'] >= 0.05):
+            return "Positive"
+        elif (s['compound'] <= -0.05):
+            return "Negative"
+        else:
+            return "Neutral"
+    
+    df['Sentiment'] = df.apply(conditions, axis=1)          
+    return df
