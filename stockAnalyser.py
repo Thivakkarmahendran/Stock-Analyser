@@ -11,6 +11,7 @@ from redditAPI import redditAPI
 from stockExtractor import stockExtractor
 from stockAnalysis import getTopStocks, printSentimalAnalysis
 from sentimalAnalysis import stockTextSentimentAnalysis
+from config import *
 
 
 #setup
@@ -18,8 +19,6 @@ warnings.filterwarnings("ignore")
 
 
 def main():
-    
-    redditSubreddits = ["stock", "wallstreetbets", "investing", "robinhood"]
     
     print("Starting Stock Analyser")
     startTime = time.time()    
@@ -30,43 +29,56 @@ def main():
     if not exists("dataset/redditTitles.csv"):
         redditApi = redditAPI()
         
-        for subreddit in redditSubreddits:
+        for subreddit in REDDIT_SUBREDDITS:
             dfTitles = dfTitles.append(redditApi.getTopSubredditTitles(subreddit, redditTimeFilter.WEEK.value))
         dfTitles.to_csv("dataset/redditTitles.csv", index = False)
     else:
+        dfTitles = pd.read_csv("dataset/redditTitles.csv")
         print("Reddit Titles dataset already exists")
+        
+    if(dfTitles is None or len(dfTitles) == 0):
+        print("*ERROR* Could not load reddit Titles - STOPPING PROGRAM")
+        exit()
     
-    print("Done getting reddit Titles: {} seconds".format(time.time()-startTime))
-        
-        
+    print("Done getting reddit Titles: {} seconds".format(time.time()-startTime))  
         
         
     #get Comments    
     if not exists("dataset/redditComments.csv"):
         redditApi = redditAPI()
-        dfTitles = pd.read_csv("dataset/redditTitles.csv")
-        dfAllComments = pd.DataFrame()
+        dfComments = pd.DataFrame()
         
         for index, redditTitle in dfTitles.iterrows():
-           dfAllComments = dfAllComments.append(redditApi.getPostComments(redditTitle['postId'], redditTitle['subredditName']))
+           dfComments = dfComments.append(redditApi.getPostComments(redditTitle['postId'], redditTitle['subredditName']))
 
-        dfAllComments.to_csv("dataset/redditComments.csv", index = False)
+        dfComments.to_csv("dataset/redditComments.csv", index = False)
     else:
+        dfComments = pd.read_csv("dataset/redditComments.csv")
         print("Reddit Comments dataset already exists")
+    
+    if(dfComments is None or len(dfComments) == 0):
+        print("*ERROR* Could not load reddit Comments - STOPPING PROGRAM")
+        exit()
     
     print("Done getting reddit comments: {} seconds".format(time.time()-startTime))
     
+    
     #extract stocks from comments
-    dfAllComments = pd.read_csv("dataset/redditComments.csv")
     stockExtract = stockExtractor()
-    stocks, stockTexts = stockExtract.getStockCountFromDF(dfAllComments['commentText'])
+    stocks, stockTexts = stockExtract.getStockCountFromDF(dfComments['commentText'])
+    
+    if(stocks is None or len(stocks) == 0):
+        print("*ERROR* Could not parse stocks - STOPPING PROGRAM")
+        exit()
     
     print("Done getting stocks from commennts: {} seconds".format(time.time()-startTime))
     
     #get Top Stocks
     topStocks, topStocksAndCount = getTopStocks(stocks)
     
-    print(topStocksAndCount)
+    if(topStocks is None or len(topStocks) == 0):
+        print("*ERROR* Could not get top stocks - STOPPING PROGRAM")
+        exit()
     
     print("Done getting top stocks: {} seconds".format(time.time()-startTime))
     

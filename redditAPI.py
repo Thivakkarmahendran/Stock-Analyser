@@ -43,24 +43,29 @@ class redditAPI:
         )
     
     #Extract Subreddit Titles - Top
-    def getTopSubredditTitles(self, subredditName, timeFilter):
+    def getTopSubredditTitles(self, subredditName: str, timeFilter):
 
         dfPosts = pd.DataFrame()
 
         subreddit = self.redditApi.subreddit(subredditName)
         for post in subreddit.top(timeFilter):
             
-            dfPosts = dfPosts.append({
-                'subredditName' : subreddit.display_name, 
-                'subredditId' : subreddit.id , 
-                'subredditType' : "Top", 
-                'subredditTimeFilter' : timeFilter, 
-                'postTitle' : post.title, 
-                'postId' : post.id, 
-                'postScore' : post.score, 
-                'postNumOfComments' : post.num_comments, 
-                'postCreated' : pd.to_datetime(post.created, unit="s") 
-            }, ignore_index = True)
+            try:
+                dfPosts = dfPosts.append({
+                    'subredditName' : subreddit.display_name, 
+                    'subredditId' : subreddit.id , 
+                    'subredditType' : "Top", 
+                    'subredditTimeFilter' : timeFilter, 
+                    'postTitle' : post.title, 
+                    'postId' : post.id, 
+                    'postScore' : post.score, 
+                    'postNumOfComments' : post.num_comments, 
+                    'postCreated' : pd.to_datetime(post.created, unit="s") 
+                }, ignore_index = True)
+            except:
+                print("*WARNING* Could not add reddit title - skipping title")
+            
+            
             
         return dfPosts
 
@@ -125,10 +130,9 @@ class redditAPI:
                 'commentText' : commentText, 
                 'commentScore' : comment.score, 
                 'commentCreated' : pd.to_datetime(comment.created, unit="s") 
-                }, ignore_index = True)
-                
-                
-        except Exception as e: print(e)
+                }, ignore_index = True) 
+        except Exception as e: 
+            print(e)
         
         return df
     

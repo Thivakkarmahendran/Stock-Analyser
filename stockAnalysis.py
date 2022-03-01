@@ -19,7 +19,6 @@ def getTopStocks(stocks, printOutput: bool = False):
         if printOutput:
             print(f"{stockName}: {symbols[stockName]}")
             
-        #times.append(symbols[stockName])
         top.append(f"{stockName}: {symbols[stockName]}")
         
     return topStocks, top
