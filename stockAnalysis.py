@@ -1,7 +1,6 @@
 import pandas as pd
 
-########### CONFIG ##########
-TOP_NUMBER_OF_STOCKS = 10
+from config import *
 
 
 

@@ -19,19 +19,27 @@ warnings.filterwarnings("ignore")
 
 def main():
     
+    redditSubreddits = ["stock", "wallstreetbets", "investing", "robinhood"]
+    
     print("Starting Stock Analyser")
     startTime = time.time()    
     os.makedirs('dataset', exist_ok = True)
     
     #get Reddit Titles
+    dfTitles = pd.DataFrame()
     if not exists("dataset/redditTitles.csv"):
         redditApi = redditAPI()
-        dfTitles = redditApi.getTopSubredditTitles("stocks", redditTimeFilter.WEEK.value)
+        
+        for subreddit in redditSubreddits:
+            dfTitles = dfTitles.append(redditApi.getTopSubredditTitles(subreddit, redditTimeFilter.WEEK.value))
         dfTitles.to_csv("dataset/redditTitles.csv", index = False)
     else:
         print("Reddit Titles dataset already exists")
     
     print("Done getting reddit Titles: {} seconds".format(time.time()-startTime))
+        
+        
+        
         
     #get Comments    
     if not exists("dataset/redditComments.csv"):
@@ -58,20 +66,19 @@ def main():
     #get Top Stocks
     topStocks, topStocksAndCount = getTopStocks(stocks)
     
+    print(topStocksAndCount)
+    
     print("Done getting top stocks: {} seconds".format(time.time()-startTime))
     
-    scores = stockTextSentimentAnalysis(topStocks, stockTexts)
+    stockScores = stockTextSentimentAnalysis(topStocks, stockTexts)
     
     print("Done perfoming sentimal analysis on top stocks: {} seconds".format(time.time()-startTime))
     
-    printSentimalAnalysis(topStocks, scores)
+    printSentimalAnalysis(topStocks, stockScores)
     
     
 
-    
-   
-    
-    
+
 if __name__ == '__main__':
     main()
     

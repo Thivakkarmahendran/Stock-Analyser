@@ -5,6 +5,8 @@ import warnings
 import enum
 
 from credentials import *
+from config import *
+from sentimalAnalysis import cleanText
 
 #setup
 warnings.filterwarnings("ignore")
@@ -18,8 +20,7 @@ class redditTimeFilter(enum.Enum):
     WEEK = "week"
     YEAR = "year"
 
-########### CONFIG ##########
-MIN_COMMENT_SCORE = 25
+
 
 """
 EXAMPLE:
@@ -112,21 +113,26 @@ class redditAPI:
         try:
             for comment in post.comments:
                 
-                if(comment.score < MIN_COMMENT_SCORE): #discard comments with low score
+                if(comment.score < MIN_REDDIT_COMMENT_SCORE): #discard comments with low score
                     continue
+                
+                commentText = cleanText(comment.body)
                 
                 df = df.append({
                 'subredditName' : subredditName,  
                 'postTitle' : post.title, 
                 'postId' : post.id, 
-                'commentText' : comment.body, 
+                'commentText' : commentText, 
                 'commentScore' : comment.score, 
                 'commentCreated' : pd.to_datetime(comment.created, unit="s") 
-            }, ignore_index = True)
+                }, ignore_index = True)
+                
                 
         except Exception as e: print(e)
         
         return df
+    
+    
     
     
     
