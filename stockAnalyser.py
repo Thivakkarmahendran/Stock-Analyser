@@ -31,6 +31,7 @@ def main():
         
         for subreddit in REDDIT_SUBREDDITS:
             dfTitles = dfTitles.append(redditApi.getTopSubredditTitles(subreddit, redditTimeFilter.WEEK.value))
+            
         dfTitles.to_csv("dataset/redditTitles.csv", index = False)
     else:
         dfTitles = pd.read_csv("dataset/redditTitles.csv")
