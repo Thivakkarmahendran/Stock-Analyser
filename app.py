@@ -1,16 +1,17 @@
 #imports
-import imp
 from os.path import exists
 import os
 import pandas as pd
 import time
 import warnings
+import sys
 
-from redditAPI import redditTimeFilter
-from redditAPI import redditAPI
-from stockExtractor import stockExtractor
-from stockAnalysis import getTopStocks, printSentimalAnalysis
-from sentimalAnalysis import stockTextSentimentAnalysis
+from stock_analyser.redditAPI import redditTimeFilter
+from stock_analyser.redditAPI import redditAPI
+from stock_analyser.stockExtractor import stockExtractor
+from stock_analyser.stockAnalysis import getTopStocks, printSentimalAnalysis
+from stock_analyser.sentimalAnalysis import stockTextSentimentAnalysis
+from config import *
 
 
 #setup
@@ -19,10 +20,9 @@ warnings.filterwarnings("ignore")
 
 def main():
     
-    redditSubreddits = ["stock", "wallstreetbets", "investing", "robinhood"]
-    
-    print("Starting Stock Analyser")
+    print("***** Starting Stock Analyser ***** \n")
     startTime = time.time()    
+
     os.makedirs('dataset', exist_ok = True)
     
     #get Reddit Titles
@@ -30,7 +30,7 @@ def main():
     if not exists("dataset/redditTitles.csv"):
         redditApi = redditAPI()
         
-        for subreddit in redditSubreddits:
+        for subreddit in REDDIT_SUBREDDITS:
             dfTitles = dfTitles.append(redditApi.getTopSubredditTitles(subreddit, redditTimeFilter.WEEK.value))
         dfTitles.to_csv("dataset/redditTitles.csv", index = False)
     else:
@@ -75,7 +75,6 @@ def main():
     print("Done perfoming sentimal analysis on top stocks: {} seconds".format(time.time()-startTime))
     
     printSentimalAnalysis(topStocks, stockScores)
-    
     
 
 

@@ -1,5 +1,7 @@
 
 #config
+REDDIT_SUBREDDITS = ["stock", "wallstreetbets", "investing", "robinhood"]
+
 MIN_REDDIT_COMMENT_SCORE = 10
 TOP_NUMBER_OF_STOCKS = 5
 

@@ -6,7 +6,7 @@ import enum
 
 from credentials import *
 from config import *
-from sentimalAnalysis import cleanText
+from stock_analyser.sentimalAnalysis import cleanText
 
 #setup
 warnings.filterwarnings("ignore")
