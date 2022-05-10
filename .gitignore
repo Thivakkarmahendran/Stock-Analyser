@@ -1,2 +1,4 @@
 credentials.py
 .DS_Store
+dataset/redditComments.csv
+dataset/redditTitles.csv

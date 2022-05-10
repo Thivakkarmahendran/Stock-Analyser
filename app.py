@@ -4,7 +4,6 @@ import os
 import pandas as pd
 import time
 import warnings
-import sys
 
 from stock_analyser.redditAPI import redditTimeFilter
 from stock_analyser.redditAPI import redditAPI
@@ -21,13 +20,19 @@ warnings.filterwarnings("ignore")
 def main():
     
     print("***** Starting Stock Analyser ***** \n")
+    
     startTime = time.time()    
 
     os.makedirs('dataset', exist_ok = True)
     
+
     #get Reddit Titles
     dfTitles = pd.DataFrame()
-    if not exists("dataset/redditTitles.csv"):
+    if not exists("dataset/redditTitles.csv") or (startTime - os.path.getmtime("dataset/redditTitles.csv") > DATA_REFRESH):
+        
+        os.remove("dataset/redditTitles.csv")
+        os.remove("dataset/redditComments.csv")
+        
         redditApi = redditAPI()
         
         for subreddit in REDDIT_SUBREDDITS:
@@ -37,8 +42,6 @@ def main():
         print("Reddit Titles dataset already exists")
     
     print("Done getting reddit Titles: {} seconds".format(time.time()-startTime))
-        
-        
         
         
     #get Comments    
@@ -75,6 +78,8 @@ def main():
     print("Done perfoming sentimal analysis on top stocks: {} seconds".format(time.time()-startTime))
     
     printSentimalAnalysis(topStocks, stockScores)
+    
+    print("***** Completed Stock Analyser ***** \n")
     
 
 
