@@ -7,6 +7,7 @@ import warnings
 
 from stock_analyser.redditAPI import redditTimeFilter
 from stock_analyser.redditAPI import redditAPI
+from stock_analyser.twitterAPI import twitterAPI
 from stock_analyser.stockExtractor import stockExtractor
 from stock_analyser.stockAnalysis import getTopStocks, printSentimalAnalysis
 from stock_analyser.sentimalAnalysis import stockTextSentimentAnalysis
@@ -15,6 +16,7 @@ from config import *
 
 #setup
 warnings.filterwarnings("ignore")
+
 
 
 def main():
