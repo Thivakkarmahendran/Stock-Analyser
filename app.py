@@ -22,6 +22,7 @@ def main():
     print("***** Starting Stock Analyser ***** \n")
     
     startTime = time.time()    
+    lastTaskTime = time.time()  
 
     os.makedirs('dataset', exist_ok = True)
     
@@ -42,6 +43,7 @@ def main():
         print("Reddit Titles dataset already exists")
     
     print("Done getting reddit Titles: {} seconds".format(time.time()-startTime))
+    lastTaskTime = time.time()
         
         
     #get Comments    
@@ -64,22 +66,25 @@ def main():
     stockExtract = stockExtractor()
     stocks, stockTexts = stockExtract.getStockCountFromDF(dfAllComments['commentText'])
     
-    print("Done getting stocks from commennts: {} seconds".format(time.time()-startTime))
+    print("Done getting stocks from comments: {} seconds".format(time.time()-lastTaskTime))
+    lastTaskTime = time.time()
     
     #get Top Stocks
     topStocks, topStocksAndCount = getTopStocks(stocks)
     
     print(topStocksAndCount)
     
-    print("Done getting top stocks: {} seconds".format(time.time()-startTime))
+    print("Done getting top stocks: {} seconds".format(time.time()-lastTaskTime))
+    lastTaskTime = time.time()
     
     stockScores = stockTextSentimentAnalysis(topStocks, stockTexts)
     
-    print("Done perfoming sentimal analysis on top stocks: {} seconds".format(time.time()-startTime))
+    print("Done perfoming sentiment analysis on top stocks: {} seconds".format(time.time()-lastTaskTime))
+    
     
     printSentimalAnalysis(topStocks, stockScores)
     
-    print("***** Completed Stock Analyser ***** \n")
+    print("***** Completed Stock Analyser in {} seconds ***** \n".format(time.time()-startTime))
     
 
 
