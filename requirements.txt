@@ -4,3 +4,4 @@ numpy>=1.22.2
 nltk>=3.7.0
 emoji>=1.6.3
 regex>=2022.1.18
+tweepy>=4.9.0
