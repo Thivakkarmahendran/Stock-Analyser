@@ -1,18 +1,23 @@
 #imports
 import time
+import datetime
+import pandas as pd
 
 from stock_analyser.redditAnalysis import runRedditAnalysis
-
-startTime = time.time()    
-
-def main():
+from stock_analyser.logger import *
     
-    print("***** Starting Stock Analyser ***** \n")
+appRunSuccesful = True
+loggerOutput = pd.DataFrame()
+
+def main():    
+    appStartTime = time.time() 
+    logComment("***** Starting Stock Analyser *****", loggerMessageType.INFO.value, "app.py")
     
     #Analysis Reddit 
-    runRedditAnalysis()
+    #runRedditAnalysis()
     
-    print("***** Completed Stock Analyser in {} seconds ***** \n".format(time.time()-startTime))
+    logComment("***** Completed Stock Analyser in {} (hrs:mins:seconds) *****".format(str(datetime.timedelta(seconds = time.time()-appStartTime))), loggerMessageType.INFO.value, "app.py")
+    exportLog()
     
 
 

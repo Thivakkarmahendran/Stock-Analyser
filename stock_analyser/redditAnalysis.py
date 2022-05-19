@@ -67,8 +67,7 @@ def getRedditComments():
     
 
 def runRedditAnalysis():
-    
-    startTime = time.time()    
+      
     lastTaskTime = time.time()  
 
     #get Reddit Titles
