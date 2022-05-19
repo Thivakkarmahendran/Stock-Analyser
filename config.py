@@ -1,7 +1,7 @@
 
 #config
 REDDIT_SUBREDDITS = ["stock", "wallstreetbets", "investing", "robinhood"]
-DATA_REFRESH = 1 #432000 #in seconds (5 days)
+DATA_REFRESH = 432000 #in seconds (5 days)
 
 
 MIN_REDDIT_COMMENT_SCORE = 10

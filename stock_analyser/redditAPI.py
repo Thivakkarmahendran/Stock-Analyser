@@ -126,9 +126,8 @@ class redditAPI:
                 'commentScore' : comment.score, 
                 'commentCreated' : pd.to_datetime(comment.created, unit="s") 
                 }, ignore_index = True)
-                
-                
-        except Exception as e: print(e)
+        except Exception as e: 
+            print(e)
         
         return df
     
