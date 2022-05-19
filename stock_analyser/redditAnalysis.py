@@ -70,49 +70,47 @@ def getRedditComments():
 def runRedditAnalysis():
     global appRunSuccesful
     os.makedirs('dataset', exist_ok = True)
+   
+    if exists("dataset/redditTitles.csv") and FRESH_RUN:
+        os.remove("dataset/redditTitles.csv")
+        os.remove("dataset/redditComments.csv")
+    
        
-    if exists("dataset/redditTitles.csv") and (time.time() - os.path.getmtime("dataset/redditTitles.csv") < DATA_REFRESH):
+    if exists("dataset/redditTitles.csv") and (time.time() - os.path.getmtime("dataset/redditTitles.csv") < DATA_REFRESH) and not FORCE_RUN:
         logComment("Skipping stock analyser app since last run time is less than DATA_REFRESH", loggerMessageType.ERROR.value, "RedditAnalysis.py")
-    else:
-      
-        if exists("dataset/redditTitles.csv"):
-            os.remove("dataset/redditTitles.csv")
-            os.remove("dataset/redditComments.csv")
-      
-        lastTaskTime = time.time()  
+        return 
+   
+    lastTaskTime = time.time()  
+    
+    #get Reddit Titles
+    getRedditTitles()
+    logComment("Done getting reddit Titles: {} seconds".format(time.time()-lastTaskTime), loggerMessageType.INFO.value, "RedditAnalysis.py")
+    lastTaskTime = time.time()  
+    
+    #get Reddit Comments
+    dfAllComments = getRedditComments()
+    logComment("Done getting reddit Comments: {} seconds".format(time.time()-lastTaskTime), loggerMessageType.INFO.value, "RedditAnalysis.py")
+    
+    #extract stocks from comments
+    stockExtract = stockExtractor()
+    
+    try:
+        stocks, stockTexts = stockExtract.getStockCountFromDF(dfAllComments['commentText'])
+        logComment("Done getting stocks from comments: {} seconds".format(time.time()-lastTaskTime), loggerMessageType.INFO.value, "RedditAnalysis.py")
+        lastTaskTime = time.time()
         
-        #get Reddit Titles
-        getRedditTitles()
-        logComment("Done getting reddit Titles: {} seconds".format(time.time()-lastTaskTime), loggerMessageType.INFO.value, "RedditAnalysis.py")
-        lastTaskTime = time.time()  
+        #get Top Stocks
+        topStocks, topStocksAndCount = getTopStocks(stocks)
+        logComment("Done getting top stocks: {} seconds".format(time.time()-lastTaskTime), loggerMessageType.INFO.value, "RedditAnalysis.py")
+        print(topStocksAndCount)
+        lastTaskTime = time.time()
         
-        #get Reddit Comments
-        dfAllComments = getRedditComments()
-        logComment("Done getting reddit Comments: {} seconds".format(time.time()-lastTaskTime), loggerMessageType.INFO.value, "RedditAnalysis.py")
+        stockScores = stockTextSentimentAnalysis(topStocks, stockTexts)
+        logComment("Done perfoming sentiment analysis on top stocks: {} seconds".format(time.time()-lastTaskTime), loggerMessageType.INFO.value, "RedditAnalysis.py")
         
-        #extract stocks from comments
-        stockExtract = stockExtractor()
-        
-        try:
-            stocks, stockTexts = stockExtract.getStockCountFromDF(dfAllComments['commentText'])
-            logComment("Done getting stocks from comments: {} seconds".format(time.time()-lastTaskTime), loggerMessageType.INFO.value, "RedditAnalysis.py")
-            lastTaskTime = time.time()
-            
-            #get Top Stocks
-            topStocks, topStocksAndCount = getTopStocks(stocks)
-            logComment("Done getting top stocks: {} seconds".format(time.time()-lastTaskTime), loggerMessageType.INFO.value, "RedditAnalysis.py")
-            print(topStocksAndCount)
-            lastTaskTime = time.time()
-            
-            stockScores = stockTextSentimentAnalysis(topStocks, stockTexts)
-            logComment("Done perfoming sentiment analysis on top stocks: {} seconds".format(time.time()-lastTaskTime), loggerMessageType.INFO.value, "RedditAnalysis.py")
-            
-            printSentimalAnalysis(topStocks, stockScores)
-        except Exception as e: 
-            logComment(e, loggerMessageType.ERROR.value, "RedditAnalysis.py")
-            global appRunSuccesful
-            appRunSuccesful = False
-        
-        
-
+        printSentimalAnalysis(topStocks, stockScores)
+    except Exception as e: 
+        logComment(e, loggerMessageType.ERROR.value, "RedditAnalysis.py")
+        global appRunSuccesful
+        appRunSuccesful = False
     
