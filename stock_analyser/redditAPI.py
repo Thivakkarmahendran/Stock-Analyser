@@ -7,6 +7,7 @@ import enum
 from credentials import *
 from config import *
 from stock_analyser.sentimalAnalysis import cleanText
+from stock_analyser.logger import *
 
 #setup
 warnings.filterwarnings("ignore")
@@ -47,21 +48,26 @@ class redditAPI:
 
         dfPosts = pd.DataFrame()
 
-        subreddit = self.redditApi.subreddit(subredditName)
-        for post in subreddit.top(timeFilter):
-            
-            dfPosts = dfPosts.append({
-                'subredditName' : subreddit.display_name, 
-                'subredditId' : subreddit.id , 
-                'subredditType' : "Top", 
-                'subredditTimeFilter' : timeFilter, 
-                'postTitle' : post.title, 
-                'postId' : post.id, 
-                'postScore' : post.score, 
-                'postNumOfComments' : post.num_comments, 
-                'postCreated' : pd.to_datetime(post.created, unit="s") 
-            }, ignore_index = True)
-            
+        try:
+            subreddit = self.redditApi.subreddit(subredditName)
+            for post in subreddit.top(timeFilter):
+                
+                dfPosts = dfPosts.append({
+                    'subredditName' : subreddit.display_name, 
+                    'subredditId' : subreddit.id , 
+                    'subredditType' : "Top", 
+                    'subredditTimeFilter' : timeFilter, 
+                    'postTitle' : post.title, 
+                    'postId' : post.id, 
+                    'postScore' : post.score, 
+                    'postNumOfComments' : post.num_comments, 
+                    'postCreated' : pd.to_datetime(post.created, unit="s") 
+                }, ignore_index = True)
+        except Exception as e: 
+            logComment(e, loggerMessageType.ERROR.value, "RedditAPI.py")
+            global appRunSuccesful
+            appRunSuccesful = False
+               
         return dfPosts
 
     #Extract Subreddit Titles - Hot
@@ -69,19 +75,24 @@ class redditAPI:
 
         df = pd.DataFrame()
 
-        subreddit = self.redditApi.subreddit(subredditName)
-        for post in subreddit.hot():
-            df = df.append({
-                'subredditName' : subreddit.display_name, 
-                'subredditId' : subreddit.id , 
-                'subredditType' : "Hot",  
-                'postTitle' : post.title, 
-                'postId' : post.id, 
-                'postScore' : post.score, 
-                'postNumOfComments' : post.num_comments, 
-                'postCreated' : pd.to_datetime(post.created, unit="s") 
-            }, ignore_index = True)
-
+        try:
+            subreddit = self.redditApi.subreddit(subredditName)
+            for post in subreddit.hot():
+                df = df.append({
+                    'subredditName' : subreddit.display_name, 
+                    'subredditId' : subreddit.id , 
+                    'subredditType' : "Hot",  
+                    'postTitle' : post.title, 
+                    'postId' : post.id, 
+                    'postScore' : post.score, 
+                    'postNumOfComments' : post.num_comments, 
+                    'postCreated' : pd.to_datetime(post.created, unit="s") 
+                }, ignore_index = True)
+        except Exception as e: 
+            logComment(e, loggerMessageType.ERROR.value, "RedditAPI.py")
+            global appRunSuccesful
+            appRunSuccesful = False
+            
         return df
 
     #Extract Subreddit Titles - New
@@ -89,28 +100,33 @@ class redditAPI:
 
         df = pd.DataFrame()
 
-        subreddit = self.redditApi.subreddit(subredditName)
-        for post in subreddit.new():
-            df = df.append({
-                'subredditName' : subreddit.display_name, 
-                'subredditId' : subreddit.id , 
-                'subredditType' : "New",  
-                'postTitle' : post.title, 
-                'postId' : post.id, 
-                'postScore' : post.score, 
-                'postNumOfComments' : post.num_comments, 
-                'postCreated' : pd.to_datetime(post.created, unit="s") 
-            }, ignore_index = True)
-
+        try:
+            subreddit = self.redditApi.subreddit(subredditName)
+            for post in subreddit.new():
+                df = df.append({
+                    'subredditName' : subreddit.display_name, 
+                    'subredditId' : subreddit.id , 
+                    'subredditType' : "New",  
+                    'postTitle' : post.title, 
+                    'postId' : post.id, 
+                    'postScore' : post.score, 
+                    'postNumOfComments' : post.num_comments, 
+                    'postCreated' : pd.to_datetime(post.created, unit="s") 
+                }, ignore_index = True)
+        except Exception as e: 
+            logComment(e, loggerMessageType.ERROR.value, "RedditAPI.py")
+            global appRunSuccesful
+            appRunSuccesful = False
+            
         return df
     
     #Extract comments from post
     def getPostComments(self, postId, subredditName):
         
         df = pd.DataFrame()
-        post =  self.redditApi.submission(id = postId)
         
         try:
+            post =  self.redditApi.submission(id = postId)
             for comment in post.comments:
                 
                 if(comment.score < MIN_REDDIT_COMMENT_SCORE): #discard comments with low score
@@ -127,7 +143,9 @@ class redditAPI:
                 'commentCreated' : pd.to_datetime(comment.created, unit="s") 
                 }, ignore_index = True)
         except Exception as e: 
-            print(e)
+            logComment(e, loggerMessageType.ERROR.value, "RedditAPI.py")
+            global appRunSuccesful
+            appRunSuccesful = False
         
         return df
     

@@ -2,6 +2,7 @@ import string
 from xmlrpc.client import boolean
 import tweepy 
 from credentials import *
+from stock_analyser.logger import *
 
 """
     twitterApi = twitterAPI()
@@ -26,7 +27,7 @@ class twitterAPI:
         try:
             self.twitterApi.verify_credentials()
         except Exception as e:
-            print("Error during authentication: {}".format(e))
+            logComment("Error during authentication: {}".format(e), loggerMessageType.ERROR.value, "twitterAPI.py") 
             
             
     def postTweet(self, text: string):
