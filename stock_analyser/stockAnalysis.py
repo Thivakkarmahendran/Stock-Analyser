@@ -10,8 +10,7 @@ def getTopStocks(stocks):
     try:
         symbols = dict(sorted(stocks.items(), key=lambda item: item[1], reverse = True))
         topStocks = list(symbols.keys())[0 : TOP_NUMBER_OF_STOCKS]
-            
-        
+                    
         times = []
         top = []
         for stockName in topStocks:            
@@ -23,6 +22,9 @@ def getTopStocks(stocks):
         appRunSuccesful = False
         
     return topStocks, top
+
+
+
 
 
 def printSentimalAnalysis(topStocks, scores):

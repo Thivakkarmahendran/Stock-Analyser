@@ -71,6 +71,14 @@ def runRedditAnalysis():
     global appRunSuccesful
     os.makedirs('dataset', exist_ok = True)
    
+    if FRESH_RUN:
+        logComment("FRESH RUN IS ENABLED", loggerMessageType.INFO.value, "RedditAnalysis.py")
+         
+    if FORCE_RUN:
+        logComment("FORCE RUN IS ENABLED", loggerMessageType.INFO.value, "RedditAnalysis.py")
+         
+         
+   
     if exists("dataset/redditTitles.csv") and FRESH_RUN:
         os.remove("dataset/redditTitles.csv")
         os.remove("dataset/redditComments.csv")
@@ -102,15 +110,18 @@ def runRedditAnalysis():
         #get Top Stocks
         topStocks, topStocksAndCount = getTopStocks(stocks)
         logComment("Done getting top stocks: {} seconds".format(time.time()-lastTaskTime), loggerMessageType.INFO.value, "RedditAnalysis.py")
+        
         print(topStocksAndCount)
+        print(topStocks)
+        
         lastTaskTime = time.time()
         
         stockScores = stockTextSentimentAnalysis(topStocks, stockTexts)
         logComment("Done perfoming sentiment analysis on top stocks: {} seconds".format(time.time()-lastTaskTime), loggerMessageType.INFO.value, "RedditAnalysis.py")
         
         printSentimalAnalysis(topStocks, stockScores)
+        
     except Exception as e: 
         logComment(e, loggerMessageType.ERROR.value, "RedditAnalysis.py")
-        global appRunSuccesful
         appRunSuccesful = False
     
