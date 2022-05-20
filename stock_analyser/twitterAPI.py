@@ -1,7 +1,9 @@
+import imp
 import string
 from xmlrpc.client import boolean
 import tweepy 
 from credentials import *
+from config import *
 from stock_analyser.logger import *
 
 """
@@ -31,8 +33,27 @@ class twitterAPI:
             
             
     def postTweet(self, text: string):
-        self.twitterApi.update_status(status = text)
+        
+        if not POST_TWEET:
+            logComment("TWITTER POST disabled in the config", loggerMessageType.INFO.value, "twitterAPI.py")
+            return
+        
+        try:
+            self.twitterApi.update_status(status = text)
+        except Exception as e: 
+            logComment(e, loggerMessageType.ERROR.value, "twitterAPI.py")
+            global appRunSuccesful
+            appRunSuccesful = False
         
     def postTweetWithImage(self, text: string, imagePath: string):
-        self.twitterApi.update_with_media(imagePath, imagePath)
+        if not POST_TWEET:
+            logComment("TWITTER POST disabled in the config", loggerMessageType.INFO.value, "twitterAPI.py")
+            return
+        
+        try:
+            self.twitterApi.update_with_media(imagePath, imagePath)
+        except Exception as e: 
+            logComment(e, loggerMessageType.ERROR.value, "twitterAPI.py")
+            global appRunSuccesful
+            appRunSuccesful = False
          

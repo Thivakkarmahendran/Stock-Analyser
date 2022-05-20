@@ -10,7 +10,7 @@ from stock_analyser.redditAPI import redditTimeFilter
 from stock_analyser.redditAPI import redditAPI
 from stock_analyser.twitterAPI import twitterAPI
 from stock_analyser.stockExtractor import stockExtractor
-from stock_analyser.stockAnalysis import getTopStocks, printSentimalAnalysis
+from stock_analyser.stockAnalysis import getTopStocks, printSentimalAnalysis, postTopStocks
 from stock_analyser.sentimalAnalysis import stockTextSentimentAnalysis
 from config import *
 from stock_analyser.logger import *
@@ -111,15 +111,17 @@ def runRedditAnalysis():
         topStocks, topStocksAndCount = getTopStocks(stocks)
         logComment("Done getting top stocks: {} seconds".format(time.time()-lastTaskTime), loggerMessageType.INFO.value, "RedditAnalysis.py")
         
-        print(topStocksAndCount)
-        print(topStocks)
+
         
         lastTaskTime = time.time()
         
         stockScores = stockTextSentimentAnalysis(topStocks, stockTexts)
         logComment("Done perfoming sentiment analysis on top stocks: {} seconds".format(time.time()-lastTaskTime), loggerMessageType.INFO.value, "RedditAnalysis.py")
         
-        printSentimalAnalysis(topStocks, stockScores)
+        
+        #publish results
+        postTopStocks(topStocks, topStocksAndCount)
+        #printSentimalAnalysis(topStocks, stockScores)
         
     except Exception as e: 
         logComment(e, loggerMessageType.ERROR.value, "RedditAnalysis.py")
