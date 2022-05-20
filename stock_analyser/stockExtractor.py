@@ -2,6 +2,7 @@
 import pandas as pd
 
 from config import *
+from stock_analyser.logger import *
 
 class stockExtractor:
   
@@ -9,9 +10,14 @@ class stockExtractor:
     listOfStockNames = {}
     
     def __init__(self):
-        dfStocks = pd.read_csv("dataset/nasdaqStocks.csv")
-        self.listOfStockSymbols = dfStocks['Symbol']
-        self.listOfStockNames = dfStocks['Name']
+        try:
+            dfStocks = pd.read_csv("dataset/nasdaqStocks.csv")
+            self.listOfStockSymbols = dfStocks['Symbol']
+            self.listOfStockNames = dfStocks['Name']
+        except Exception as e: 
+            logComment(e, loggerMessageType.ERROR.value, "stockExtractor.py") 
+            global appRunSuccesful
+            appRunSuccesful = False
         
     def getStockCountFromDF(self, textDF):
         

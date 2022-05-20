@@ -10,6 +10,7 @@ import string
 import en_core_web_sm
 import pandas as pd
 import numpy as np
+from stock_analyser.logger import *
 
 from config import *
 
@@ -53,6 +54,7 @@ def stockTextSentimentAnalysis(topStocks, stockTexts):
     # adding custom words from data.py 
     vader.lexicon.update(CUSTOM_SENTIMENT_ANALYSIS)
     
+    
     for stock in topStocks:
         stockComments = stockTexts[stock]
         for comment in stockComments:
@@ -71,14 +73,20 @@ def stockTextSentimentAnalysis(topStocks, stockTexts):
     
     df = pd.DataFrame.from_dict(scores)
     df = df.T
-            
-    def conditions(s):
-        if (s['compound'] >= 0.05):
-            return "Positive"
-        elif (s['compound'] <= -0.05):
-            return "Negative"
-        else:
-            return "Neutral"
     
-    df['Sentiment'] = df.apply(conditions, axis=1)          
+    try:
+        def conditions(s):
+            if (s['compound'] >= 0.05):
+                return "Positive"
+            elif (s['compound'] <= -0.05):
+                return "Negative"
+            else:
+                return "Neutral"
+        
+        df['Sentiment'] = df.apply(conditions, axis=1)        
+    except Exception as e: 
+        logComment(e, loggerMessageType.ERROR.value, "sentimalAnalysis.py") 
+        global appRunSuccesful
+        appRunSuccesful = False
+      
     return df

@@ -1,28 +1,38 @@
 import pandas as pd
 
 from config import *
+from stock_analyser.logger import *
+from stock_analyser.twitterAPI import twitterAPI 
 
 
 
-def getTopStocks(stocks, printOutput: bool = False):
+def getTopStocks(stocks):
     
-    symbols = dict(sorted(stocks.items(), key=lambda item: item[1], reverse = True))
-    topStocks = list(symbols.keys())[0:TOP_NUMBER_OF_STOCKS]
+    try:
+        symbols = dict(sorted(stocks.items(), key=lambda item: item[1], reverse = True))
+        topStocks = list(symbols.keys())[0 : TOP_NUMBER_OF_STOCKS]
+                    
+        topStocksCount = {}
         
-    if printOutput:
-        print(f"\n{TOP_NUMBER_OF_STOCKS} most mentioned Stocks: ")
+        for stockName in topStocks:            
+            topStocksCount[stockName] = symbols[stockName]
+    except Exception as e: 
+        logComment(e, loggerMessageType.ERROR.value, "stockAnalysis.py") 
+        global appRunSuccesful
+        appRunSuccesful = False
+        
+    return topStocks, topStocksCount
+
+
+def postTopStocks(topStocks, topStocksCount):
+    tweet = "The top mentoined stocks on Reddit for the past week are: \n"
+    for stock in topStocks:  
+        tweet = tweet + "- {}\n".format(stock)    
     
-    times = []
-    top = []
-    for stockName in topStocks:
+    twitterApi = twitterAPI()
+    twitterApi.postTweet(tweet)      
         
-        if printOutput:
-            print(f"{stockName}: {symbols[stockName]}")
-            
-        #times.append(symbols[stockName])
-        top.append(f"{stockName}: {symbols[stockName]}")
-        
-    return topStocks, top
+    
 
 
 def printSentimalAnalysis(topStocks, scores):
