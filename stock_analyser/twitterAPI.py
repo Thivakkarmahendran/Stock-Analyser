@@ -40,6 +40,7 @@ class twitterAPI:
         
         try:
             self.twitterApi.update_status(status = text)
+            logComment("Posted tweet", loggerMessageType.INFO.value, "twitterAPI.py")
         except Exception as e: 
             logComment(e, loggerMessageType.ERROR.value, "twitterAPI.py")
             global appRunSuccesful
@@ -52,6 +53,7 @@ class twitterAPI:
         
         try:
             self.twitterApi.update_with_media(imagePath, imagePath)
+            logComment("Posted tweet with image", loggerMessageType.INFO.value, "twitterAPI.py")
         except Exception as e: 
             logComment(e, loggerMessageType.ERROR.value, "twitterAPI.py")
             global appRunSuccesful
