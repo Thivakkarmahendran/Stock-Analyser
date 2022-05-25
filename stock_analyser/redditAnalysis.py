@@ -79,12 +79,12 @@ def runRedditAnalysis():
          
          
    
-    if exists("dataset/redditTitles.csv") and FRESH_RUN:
+    if exists("dataset/redditTitles.csv") and ((time.time() - os.path.getmtime("dataset/redditTitles.csv") > DATA_REFRESH) or FRESH_RUN):
         os.remove("dataset/redditTitles.csv")
         os.remove("dataset/redditComments.csv")
     
        
-    if exists("dataset/redditTitles.csv") and (time.time() - os.path.getmtime("dataset/redditTitles.csv") < DATA_REFRESH) or not FORCE_RUN:
+    if (exists("dataset/redditTitles.csv") and (time.time() - os.path.getmtime("dataset/redditTitles.csv") < DATA_REFRESH)) and not FORCE_RUN:
         logComment("Skipping stock analyser app since last run time is less than DATA_REFRESH", loggerMessageType.ERROR.value, "RedditAnalysis.py")
         return 
    

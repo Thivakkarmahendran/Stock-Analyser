@@ -5,3 +5,4 @@ nltk>=3.7.0
 emoji>=1.6.3
 regex>=2022.1.18
 tweepy>=4.9.0
+spacy>=3.3.0
