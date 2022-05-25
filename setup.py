@@ -1,10 +1,6 @@
-from setuptools import setup
 
-setup(
-   name='stock-analyser',
-   version='1.0.0',
-   description='Scrap the internet about stocks',
-   author='Thivakkar Mahendran',
-   author_email='mthivakkar@gmail.com',
-   packages=['stock-analyser'] 
-)
+APP_VERSION = '1.0.1'
+APP_NAME = 'stock-analyser'
+APP_DESCRIPTION = 'Scrap the internet about stocks'
+APP_AUTHOR = 'Thivakkar Mahendran'
+APP_AUTHOR_EMAIL = 'mthivakkar@gmail.com'
